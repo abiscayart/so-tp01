@@ -2,6 +2,11 @@ export LC_ALL=C
 CXXFLAGS= -Wall -pedantic -g -ggdb
 LDFLAGS= -lpthread
 
+export PATH := $(shell pwd):$(PATH)
+
+.DEFAULT_GOAL := all
+
+include tasks/tasks.mk
 OBJS=main.o simu.o basesched.o basetask.o tasks.o sched_rr.o sched_fcfs.o sched_rr2.o sched_no_mistery.o
 MAIN=simusched
 
@@ -19,6 +24,8 @@ main.o: main.cpp simu.h basetask.h basesched.h tasks.h sched_fcfs.h \
 simu.o: simu.cpp simu.h basetask.h basesched.h
 simusched.o: simusched.cpp basetask.h basesched.h tasks.h
 tasks.o: tasks.cpp tasks.h basetask.h
+
+ejercicios: ejercicio01  ejercicio02
 
 clean:
 	rm -f $(OBJS) $(MAIN)

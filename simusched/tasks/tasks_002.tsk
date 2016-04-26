@@ -1,0 +1,8 @@
+#Ejercicio 2. Consultar si la cantidad de llamadas bloqueantes puede ser cualquier cosa
+TaskCPU 500
+@10
+TaskConsola 10 1 4
+@20
+TaskConsola 20 1 4
+@30
+TaskConsola 15 1 4
