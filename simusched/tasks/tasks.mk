@@ -1,13 +1,13 @@
 .PHONY += ejercicio01,ejercicio02
 
-ejercicio01: all
+ejercicio1: all
 	@echo -e '\033[0;32m'
 	@echo '[INFO] ------------------------------------------------------------------------'
 	@echo '[INFO] EJERCICIO 01'
 	@echo '[INFO] ------------------------------------------------------------------------'
 	@echo -e '\033[0m'
 	simusched tasks/tasks_001.tsk 1 1 1 SchedFCFS | graphsched.py > tasks/images/tasks_000.png	
-ejercicio02: all
+ejercicio2: all
 	@echo -e '\033[0;32m'
 	@echo '[INFO] ------------------------------------------------------------------------'
 	@echo '[INFO] EJERCICIO 02'
