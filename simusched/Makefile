@@ -27,7 +27,7 @@ simu.o: simu.cpp simu.h basetask.h basesched.h
 simusched.o: simusched.cpp basetask.h basesched.h tasks.h
 tasks.o: tasks.cpp tasks.h basetask.h
 
-ejercicios: ejercicio1  ejercicio2 ejercicio3 ejercicio5 ejercicio6
+ejercicios: ejercicio1  ejercicio2 ejercicio3 ejercicio5 ejercicio6 ejercicio7 ejercicio8
 
 clean:
 	rm -f $(OBJS) $(MAIN)
