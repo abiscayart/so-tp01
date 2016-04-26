@@ -19,6 +19,35 @@ void TaskAlterno(int pid, vector<int> params) { // params: ms_pid, ms_io, ms_pid
 }
 
 
+void TaskConsola(int pid, vector<int> params){
+	/**
+	 * Cantidad de llamadas bloqueantes
+	 */
+	int n = params[0];
+	/**
+	 * Duracion minima
+	 */
+	int bmin = params[1];
+	/**
+	 * Duracion maxima
+	 */
+	int bmax = params[2];
+	/**
+	 * Genero el numero aleatorio entre [bmin, bmax]
+	 */
+	int diff = bmax - bmin;
+	srand(time(NULL));
+	/**
+	 * Genero los n bloqueos en el sistema
+	 */
+	int rnumber = 0;
+	for (int i = 0; i < n; ++i) {
+		rnumber  = diff != 0 ? (rand() % diff) : 0;
+		rnumber += bmin;
+		uso_IO(pid, rnumber);
+	}
+}
+
 
 void tasks_init(void) {
 	/* Todos los tipos de tareas se deben registrar acá para poder ser usadas.
