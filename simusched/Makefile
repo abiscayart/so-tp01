@@ -6,8 +6,9 @@ export PATH := $(shell pwd):$(PATH)
 
 .DEFAULT_GOAL := all
 
-include tasks/tasks.mk
-include batch/batch.mk
+include ej1/tasks.mk
+include ej2/tasks.mk
+include ej3/batch.mk
 include rr/rr.mk
 OBJS=main.o simu.o basesched.o basetask.o tasks.o sched_rr.o sched_fcfs.o sched_rr2.o sched_no_mistery.o
 MAIN=simusched
