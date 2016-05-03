@@ -1,4 +1,6 @@
-TaskCPU 50
-TaskCPU 40
-@45:
-TaskCPU 40
+TaskCPU 30
+TaskCPU 30
+TaskCPU 30
+TaskConsola 5 3 3
+TaskConsola 5 3 3
+
