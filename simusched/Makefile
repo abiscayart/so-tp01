@@ -9,7 +9,10 @@ export PATH := $(shell pwd):$(PATH)
 include ej1/tasks.mk
 include ej2/tasks.mk
 include ej3/batch.mk
-include rr/rr.mk
+include ej5/rr.mk
+include ej6/fcfs.mk
+include ej7/mist.mk
+include ej8/rr2.mk
 OBJS=main.o simu.o basesched.o basetask.o tasks.o sched_rr.o sched_fcfs.o sched_rr2.o sched_no_mistery.o
 MAIN=simusched
 
