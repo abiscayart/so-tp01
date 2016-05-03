@@ -34,7 +34,7 @@ void TaskConsola(int pid, vector<int> params){
 	srand(time(NULL));
 	
 	//se realizan las n llamadas bloqueantes al sistema
-		int rnumber = 0;
+	int rnumber = 0;
 	for (int i = 0; i < n; ++i) {
 		rnumber  = diff != 0 ? (rand() % diff) : 0;
 		rnumber += bmin;

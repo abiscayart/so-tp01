@@ -1,2 +1,6 @@
 #Ejercicio 1
 TaskConsola 4 4 10
+@4
+TaskConsola 2 0 12
+@50
+TaskConsola 5 1 4

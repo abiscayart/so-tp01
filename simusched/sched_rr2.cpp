@@ -74,11 +74,11 @@ int SchedRR2::tick(int cpu, const enum Motivo m) {
 		if (process[cpu].empty()) {
 			active[cpu] = IDLE;
 			return IDLE_TASK;
-		} else {
-			active[cpu] = BUSY;
-			reset(cpu);
-			return next(cpu);
-		}
+		} 
+		
+		active[cpu] = BUSY;
+		reset(cpu);
+		return next(cpu);
 	}
 
 	/**
@@ -103,29 +103,28 @@ int SchedRR2::tick(int cpu, const enum Motivo m) {
 			if (process[cpu].empty()) {
 				active[cpu] = IDLE;
 				return IDLE_TASK;
-			} else {
+			} 			
+			active[cpu] = BUSY;
+			reset(cpu);
+			return next(cpu);
+		}
+
+		if (core[cpu] == 0) {
+			if (process[cpu].empty()) {
 				active[cpu] = BUSY;
 				reset(cpu);
-				return next(cpu);
-			}
-		} else {
-			if (core[cpu] == 0) {
-				if (process[cpu].empty()) {
-					active[cpu] = BUSY;
-					reset(cpu);
-					return current_pid(cpu);
-				} else {
-					active[cpu] = BUSY;
-					process[cpu].push(current_pid(cpu));
-					reset(cpu);
-					return next(cpu);
-				}
-			} else {
-				active[cpu] = BUSY;
-				core[cpu]--;
 				return current_pid(cpu);
 			}
-		}
+
+			active[cpu] = BUSY;
+			process[cpu].push(current_pid(cpu));
+			reset(cpu);
+			return next(cpu);
+		} 
+		
+		active[cpu] = BUSY;
+		core[cpu]--;
+		return current_pid(cpu);
 	}
 
 	if (m == BLOCK) {
@@ -133,11 +132,11 @@ int SchedRR2::tick(int cpu, const enum Motivo m) {
 		if (process[cpu].empty()) {
 			active[cpu] = IDLE;
 			return IDLE_TASK;
-		} else {
-			active[cpu] = BUSY;
-			reset(cpu);
-			return next(cpu);
-		}
+		} 
+		
+		active[cpu] = BUSY;
+		reset(cpu);
+		return next(cpu);
 	}
 	return IDLE_TASK;
 }
