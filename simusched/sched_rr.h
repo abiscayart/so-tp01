@@ -9,6 +9,7 @@
 
 using namespace std;
 
+// defino tipos para leer mejor el codigo
 typedef int pid;
 
 typedef int cpu;
@@ -23,33 +24,27 @@ class SchedRR : public SchedBase {
 
 	private:
 		/**
-		 * Cola para todos los procesos que van llegando
-		 * al scheduler, es una unica cola en comun para
-		 * todos los proceso.
+		 * Unica cola global para todos los procesos que llegan al scheduler.
 		 */
-		std::queue<pid> process;
+		std::queue<pid> procesos;
 		/**
-		 * Quantum que tiene el scheduler para cada uno
-		 * de los procesadores que tiene el sistema, el
-		 * indice del operador [] representa el numero
+		 * Este vector contiene los quantums que tiene el scheduler para cada uno
+		 * de sus procesadores, el indice representa el numero
+		 * de procesador.
+		 */
+		std::vector<cpu> quantums;
+		/**
+		 * En ente vector se almacena el quantum restante que tienen cada
+		 * uno de los procesadores, el indice representa el numero
 		 * de procesador con indice en 0.
 		 */
-		std::vector<cpu> quantum;
+		std::vector<cpu> nucleos;
 		/**
-		 * Representa el quantum restante que tiene cada
-		 * uno de los procesadores que tiene el sistema,
-		 * el indice del operador [] representa el numero
-		 * de procesador con indice en 0.
-		 */
-		std::vector<cpu> core;
-		/**
-		 * Retorna el proximo proceso de la cola, requiere
-		 * que la cola no se encuentre vacia.
+		 * Retorna el proximo proceso de la cola, requiere que la cola no se encuentre vacia.
 		 */
 		int next(int cpu);
 		/**
-		 * Restablece los valores del quantum para un
-		 * determinado CPU.
+		 * Restablece los valores del quantum para un determinado CPU.
 		 */
 		void reset(int cpu);
 };
