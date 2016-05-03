@@ -19,30 +19,24 @@ class SchedNoMistery : public SchedBase {
 
   private:
 
-    /*std::vector<std::queue<int> > vq;
-    std::vector<int> def_quantum;
-    std::vector<int> unblock_to;
-    int quantum, n, cur_pri;*/
-
 
     /**
-     * Vector de Colas para todos los procesos que van llegando
-     * al scheduler, es una unico vector para
-     * todos los proceso. Cada process[i] representa el nivel
-     * de quantum en el que ejecutaran las tareas encoladas.
+     * Única Cola global para todos los procesos que van llegando al scheduler. 
+     * Cada procesos[i] representa el nivel de quantum en el que ejecutaran las tareas encoladas.
      */
-     std::vector< std::queue<pid> >process;
+     std::vector< std::queue<pid> >procesos;
     /**
-     * Vector de Quantums pasados por parametro.
+     * quantums pasados por parametro.
      */
-    std::vector<cpu> quantum;
-    /**diccionario que vincula un proceso con su quantum
-     * QuantumTarea[pid] devuelve la posicion en el vector
-     * quantum[] para la tarea pid.
+    std::vector<cpu> quantums;
+
+    /**
+     * Mapa que vincula un proceso con su quantum
+     * quatum_tarea[pid] devuelve la posicion en el vector quantums[] para la tarea pid.
      */
-    std::map<int,unsigned int> QuantumTarea;
-    //
-    int QuantumActual;
+    std::map<int,unsigned int> quantum_tarea;
+    
+    int current_quantum;
     /**
      * Retorna el proximo proceso de la cola, requiere
      * que la cola no se encuentre vacia.
