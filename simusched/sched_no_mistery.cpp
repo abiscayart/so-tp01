@@ -28,17 +28,17 @@ void SchedNoMistery::unblock(int pid) {
 
 int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 	/**
-	 * Si el proseso termino entonces buscamos el siguiente.
+	 * Si el proceso termino entonces buscamos el siguiente.
 	 */ 
 	if (m == EXIT) {
 		return next();
 	}
 
 	/**
-	 * Si el proseso es IDLE, seguimos buscando. Si se termino el quantum
-	 * de la tarea actual, se sube el nivel de la tarea actual (si no esta
-	 * en el ultimo nivel) y se vuelve a encolar en el nivel correspondiente
-	 * y se busca el siguiente. Sino se resta en 1 el quantum.
+	 * Si el proceso es IDLE, seguimos buscando. Si se termino el quantum
+	 * de la tarea actual, se sube el nivel de la misma si es que no esta
+	 * en el ultimo nivel, se vuelve a encolar en el nivel correspondiente
+	 * y se busca el siguiente. Si no, se resta en 1 el quantum.
 	 */
 	 if (m == TICK) {
 		if (current_pid(cpu) == IDLE_TASK) {
@@ -55,10 +55,10 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 				
 			procesos[quantum_tarea[cpid]].push(cpid);
 			return next();
-		} else {
-			current_quantum--;
-			return current_pid(cpu);
 		}
+		
+		current_quantum--;
+		return current_pid(cpu);
 		
 	}
 	
@@ -78,11 +78,11 @@ int SchedNoMistery::tick(int cpu, const enum Motivo m) {
 }
 
 /**
- * Buscamos recorremos procesos desde el primer nivel, fijandonos si hay
- * algun proceso encolado, de ser asi, ese sera el proseso a ejecutar.
+ * Con esta funcion recorremos los procesos desde el primer nivel para ver si hay
+ * alguno encolado y de ser asi, ese sera el próximo a ejecutarse.
  * Sino se busca en el siguiente nivel. 
  * Si recorrimos todos los niveles y no hay ningun proceso encolado 
- * devolvemos IDLE. Si no devolvemos IDLE => current_quantum sera la cantidad
+ * devolvemos IDLE. Si no devolvemos IDLE entonces current_quantum sera la cantidad
  * del nivel actual.
  */
 

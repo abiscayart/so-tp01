@@ -22,16 +22,12 @@
 using namespace std;
 
 /**
- * Defino tipo de dato PID.
- * Solo agrega mas legibilidad
- * al codigo. Representa el pid
+ * Defino tipo de dato PID. Representa el pid
  * que viene como numero entero.
  */
 typedef int pid;
 /**
- * Defino tipo de dato CPU.
- * Solo agrega mas legibilidad
- * al codigo. Representa el core
+ * Defino tipo de dato CPU. Representa el core
  * den una cpu.
  */
 typedef int cpu;
@@ -46,42 +42,32 @@ class SchedRR2 : public SchedBase {
 
 	private:
 		/**
-		 * Cola para todos los procesos que van llegando
-		 * al scheduler, es una unica cola en comun para
-		 * todos los proceso.
+		 * Unica cola global para todos los procesos que llegan al scheduler.
 		 */
-		std::vector<std::queue<pid> > process;
+		std::vector<std::queue<pid> > procesos;
 		/*
-		 * Contiene los procesos que se encuentran bloqueados
-		 * por llamadas I/O.
+		 * Vector que contiene los procesos que se encuentran bloqueados por llamadas I/O.
 		 */
-		std::vector<std::list<pid> > blocked;
+		std::vector<std::list<pid> > bloqueados;
 
 		/**
-		 * Quantum que tiene el scheduler para cada uno
-		 * de los procesadores que tiene el sistema, el
-		 * indice del operador [] representa el numero
-		 * de procesador con indice en 0.
+		 * Este vector contiene los quantums que tiene el scheduler para cada uno
+		 * de sus procesadores, el indice representa el numero
+		 * de procesador.
 		 */
-		std::vector<cpu> quantum;
+		std::vector<cpu> quantums;
 		/**
-		 * Representa el quantum restante que tiene cada
-		 * uno de los procesadores que tiene el sistema,
-		 * el indice del operador [] representa el numero
+		 * En ente vector se almacena el quantum restante que tienen cada
+		 * uno de los procesadores, el indice representa el numero
 		 * de procesador con indice en 0.
 		 */
-		std::vector<cpu> core;
+		std::vector<cpu> nucleos;
 		/**
 		 * Representa si el procesador se encuentra con
-		 * un proceso activo. Si el valor es 1, indica
-		 * que el cpu esta con un proceso activo, si el
-		 * valor es 0 representa que el proceso esta
-		 * ejecutando idle
+		 * un proceso activo. Si el valor es 1 para proceso activo,0 para idle
 		 */
-		std::vector<cpu> active;
-		/**
-		 * Sin implementacion.
-		 */
+		std::vector<cpu> activo;
+
 		int next(int cpu);
 		/**
 		 * Restablece los valores del quantum para un

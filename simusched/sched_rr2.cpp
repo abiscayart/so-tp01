@@ -9,17 +9,17 @@ struct operation {
 } add;
 
 SchedRR2::SchedRR2(vector<int> argn) {
-	// Round robin recibe la cantidad de cores y sus cpu_quantum por parámetro
+	// Round robin recibe la cantidad de nucleos y sus cpu_quantum por parámetro
 	for (int i = 0; i < argn[1]; i++) {
 		std::list<pid> l;
 		std::queue<pid> q;
 
-		process.push_back(q);
-		blocked.push_back(l);
-		active.push_back(0);
+		procesos.push_back(q);
+		bloqueados.push_back(l);
+		activo.push_back(0);
 
-		quantum.push_back(argn[i + 2]);
-		core.push_back(argn[i + 2]);
+		quantums.push_back(argn[i + 2]);
+		nucleos.push_back(argn[i + 2]);
 	}
 }
 
@@ -29,35 +29,33 @@ SchedRR2::~SchedRR2() {
 
 void SchedRR2::load(int pid) {
 	/**
-	 * Busco el proceso que tiene menor cantidad de activo totales,
-	 * la suma la obtiene de RUNNING + BLOCKED + READY
+	 * Busco el proceso que tiene menor cantidad de activo totales (RUNNING + bloqueados + READY)
 	 */
-	std::vector<int> candidate(blocked.size(), 0);
-	transform(process.begin(), process.end(), blocked.begin(), candidate.begin(), add);
-	transform(candidate.begin(), candidate.end(), active.begin(), candidate.begin(), std::plus<int>());
+	std::vector<int> candidate(bloqueados.size(), 0);
+	transform(procesos.begin(), procesos.end(), bloqueados.begin(), candidate.begin(), add);
+	transform(candidate.begin(), candidate.end(), activo.begin(), candidate.begin(), std::plus<int>());
 	
 	/**
-	* Hasta aca tenemos la suma de las 3 colas. Ahora buscamos el minimo usando std de c.
+	* Hasta aca tenemos la suma de las 3 colas, ahora buscamos el minimo usando std de c.
 	* Primero calculamos el iterador que apunta al minimo y luego calculamos el indice del minimo
 	* calculando la distancia entre el inicio del vector y el iterador. 
 	*/
 	std::vector<int>::iterator minium = std::min_element(candidate.begin(), candidate.end());
 	int cpu = std::distance(candidate.begin(), minium);
 
-	process[cpu].push(pid);
+	procesos[cpu].push(pid);
 }
 
 void SchedRR2::unblock(int pid) {
 	std::list<int>::iterator it;
 	/**
-	 * Busco el pid en la cola que se encuentra bloqueado
-	 * y lo migro hacia los que estan para ser ejecutados
+	 * Busco el pid en la cola de bloqueados y lo muevo hacia los que estan para ser ejecutados
 	 */
-	for(unsigned int cpu = 0; cpu < blocked.size(); cpu ++){
-		it = find(blocked[cpu].begin(), blocked[cpu].end(), pid);
-		if(it != blocked[cpu].end()){
-			blocked[cpu].remove(pid);
-			process[cpu].push(pid);
+	for(unsigned int cpu = 0; cpu < bloqueados.size(); cpu ++){
+		it = find(bloqueados[cpu].begin(), bloqueados[cpu].end(), pid);
+		if(it != bloqueados[cpu].end()){
+			bloqueados[cpu].remove(pid);
+			procesos[cpu].push(pid);
 			return;
 		}
 	}
@@ -65,76 +63,71 @@ void SchedRR2::unblock(int pid) {
 
 int SchedRR2::tick(int cpu, const enum Motivo m) {
 	/**
-	 * Si el proceso ha finalizado, verifica si en
-	 * la cola de procesos restantes hay otra tarea
-	 * a ejecutar, si no hay otra, retorna la tarea
-	 * IDLE
+	 * Si el proceso ha finalizado, verifica si
+	 * la cola de procesos restantes está vacía. Si lo está, retorna la tarea
+	 * IDLE. Si no, retorna la próxima a ejecutar.
 	 */
 	if (m == EXIT) {
-		if (process[cpu].empty()) {
-			active[cpu] = IDLE;
+		if (procesos[cpu].empty()) {
+			activo[cpu] = IDLE;
 			return IDLE_TASK;
 		} 
 		
-		active[cpu] = BUSY;
+		activo[cpu] = BUSY;
 		reset(cpu);
 		return next(cpu);
 	}
 
 	/**
-	 * Cuando se produce un TICK, puede ser
-	 * porque el IDLE se esta ejecutando o
-	 * se esta ejecutando un proceso.
+	 * Cuando se produce un TICK, puede ser porque se está ejecutando un proceso o se está ejecutando 
+	 * la tarea IDLE.
 	 *
-	 * Si proceso proceso es de tipo IDLE
-	 * verifica si hay otro proceso enconlado
-	 * sino, sigue ejecutando IDLE.
+	 * Si proceso es de tipo IDLE verifica si hay otro proceso encolado y si no 
+	 * lo encuentra sigue ejecutando IDLE.
 	 *
-	 * En caso que sea otro proceso, verifica
-	 * si tiene quantum para seguir ejecutandose
-	 * en caso que no lo tenga, verifica si hay
-	 * otro proceso pendiente a ser ejecutado, de
+	 * En caso que encuentre otro proceso, verifica si tiene quantum para seguir ejecutandose.
+	 * En caso que no lo tenga, verifica si hay otro proceso pendiente a ser ejecutado, de
 	 * ser asi, se cambia de proceso, sino, se sigue
 	 * ejecutando por un quantum mas.
 	 *
 	 */
 	if (m == TICK) {
 		if (current_pid(cpu) == IDLE_TASK) {
-			if (process[cpu].empty()) {
-				active[cpu] = IDLE;
+			if (procesos[cpu].empty()) {
+				activo[cpu] = IDLE;
 				return IDLE_TASK;
 			} 			
-			active[cpu] = BUSY;
+			activo[cpu] = BUSY;
 			reset(cpu);
 			return next(cpu);
 		}
 
-		if (core[cpu] == 0) {
-			if (process[cpu].empty()) {
-				active[cpu] = BUSY;
+		if (nucleos[cpu] == 0) {
+			if (procesos[cpu].empty()) {
+				activo[cpu] = BUSY;
 				reset(cpu);
 				return current_pid(cpu);
 			}
 
-			active[cpu] = BUSY;
-			process[cpu].push(current_pid(cpu));
+			activo[cpu] = BUSY;
+			procesos[cpu].push(current_pid(cpu));
 			reset(cpu);
 			return next(cpu);
 		} 
 		
-		active[cpu] = BUSY;
-		core[cpu]--;
+		activo[cpu] = BUSY;
+		nucleos[cpu]--;
 		return current_pid(cpu);
 	}
 
 	if (m == BLOCK) {
-		blocked[cpu].push_back(current_pid(cpu));
-		if (process[cpu].empty()) {
-			active[cpu] = IDLE;
+		bloqueados[cpu].push_back(current_pid(cpu));
+		if (procesos[cpu].empty()) {
+			activo[cpu] = IDLE;
 			return IDLE_TASK;
 		} 
 		
-		active[cpu] = BUSY;
+		activo[cpu] = BUSY;
 		reset(cpu);
 		return next(cpu);
 	}
@@ -142,11 +135,11 @@ int SchedRR2::tick(int cpu, const enum Motivo m) {
 }
 
 int SchedRR2::next(int cpu) {
-	int next_pid = process[cpu].front();
-	process[cpu].pop();
+	int next_pid = procesos[cpu].front();
+	procesos[cpu].pop();
 	return next_pid;
 }
 
 void SchedRR2::reset(int cpu) {
-	core[cpu] = quantum[cpu];
+	nucleos[cpu] = quantums[cpu];
 }
