@@ -1,7 +1,7 @@
 #include "tasks.h"
 
-#define MUST_EXECUTE_CPU 1
-#define MUST_EXECUTE_IO 0
+#define CPU_TASK 1
+#define IO_TASK 0
 
 using namespace std;
 
@@ -23,27 +23,18 @@ void TaskAlterno(int pid, vector<int> params) { // params: ms_pid, ms_io, ms_pid
 
 // Ej1.
 void TaskConsola(int pid, vector<int> params){
-	/**
-	 * Cantidad de llamadas bloqueantes
-	 */
+	// cantidad de llamadas bloqueantes
 	int n = params[0];
-	/**
-	 * Duracion minima
-	 */
+	// duracion minima de la llamada
 	int bmin = params[1];
-	/**
-	 * Duracion maxima
-	 */
+	//duracion maxima de la llamada
 	int bmax = params[2];
-	/**
-	 * Genero el numero aleatorio entre [bmin, bmax]
-	 */
+	// numero aleatorio entre [bmin, bmax]
 	int diff = bmax - bmin;
 	srand(time(NULL));
-	/**
-	 * Genero los n bloqueos en el sistema
-	 */
-	int rnumber = 0;
+	
+	//se realizan las n llamadas bloqueantes al sistema
+		int rnumber = 0;
 	for (int i = 0; i < n; ++i) {
 		rnumber  = diff != 0 ? (rand() % diff) : 0;
 		rnumber += bmin;
@@ -52,44 +43,34 @@ void TaskConsola(int pid, vector<int> params){
 }
 
 
-// Ej3. (No entiendo bien la aclaración entre () de los tiempos. Revisar.)
+// Ej3. (No sé si entendí bien la aclaración entre () de los tiempos. Revisar.)
 void TaskBatch(int pid, vector<int> params) { // params: total_cpu, cant_bloqueos
-	/**
-	 * Guardo los parametros de entrada que vienen desde la
-	 * consola, los definimos como total_cpu que representa
-	 * la cantidad de ciclos de CPU a ejecutar y cant_bloqueos
-	 * que representa la cantidad de bloqueos que va a tener
-	 * el sistema.
-	 */
+
+	// tiempo de cpu total que utilice la tarea
 	int total_cpu = params[0];
+	// cantidad llamadas bloqueantes al sistema
 	int cant_bloqueos = params[1];
 	/**
 	 * Generamos un vector con la cantidad de ciclos que va a
-	 * tener la CPU, todas las posiciones son rellenadas con
-	 * el flag MUST_EXECUTE_CPU. Es decir, en donde el valor
-	 * del vector es MUST_EXECUTE_CPU, el sistema debera
+	 * tener el tiempo de CPU utilizado, guardando el flag CPU_TASK para indicar que el sistema debera
 	 * ejecutar un ciclo de CPU.
 	 */
-	std::vector<int> ciclos(total_cpu, MUST_EXECUTE_CPU);
+	std::vector<int> ciclos(total_cpu, CPU_TASK);
 	/**
-	 * Ahora llenamos las primeras #cant_bloqueos posiciones
-	 * con el flag MUST_EXECUTE_IO. Es decir, en donde el valor
-	 * del vector sea MUST_EXECUTE_IO, debe ejecutar 1 ciclo
-	 * de I/O
+	 * A las primeras cant_bloqueos posiciones las pisamos con el flag IO_TASK para indicar que se debe
+	 * realizar una llamada bloqueante.
 	 */
-	std::fill(ciclos.begin(), ciclos.begin() + cant_bloqueos, MUST_EXECUTE_IO);
-	/**
-	 * Hasta este punto realiza a medias lo solcitado por el
-	 * enunciado, ya que siempre van a ser las primeras llamadas
-	 * las bloqueantes y necesitamos que sean pseudo-aleatorio.
-	 */
+	std::fill(ciclos.begin(), ciclos.begin() + cant_bloqueos, IO_TASK);
+	
+	// Mezclamos el vector para que las llamadas sean aleatoreas.
 	srand(time(NULL) * pid);
-	std::random_shuffle(ciclos.begin(), ciclos.end()); //, random);
+	std::random_shuffle(ciclos.begin(), ciclos.end());
+	
 	/**
-	 * Recorremos el vector y vamos haciendo una a una la ejecucion
+	 * Recorremos el vector y vamos realizando la llamda que corresponda según su flag.
 	 */
 	for (int i = 0; i < total_cpu; i++) {
-		if (ciclos[i] == MUST_EXECUTE_CPU){
+		if (ciclos[i] == CPU_TASK){
 			uso_CPU(pid, 1);
 		} else {
 			//TODO: ver si solo esta llamada tiene que tardar 2 ciclos.
